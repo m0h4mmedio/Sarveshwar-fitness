@@ -94,13 +94,17 @@ function render(type = 'cardio') {
 
 const loadImageWithFallback = (element) => {
   const basePath = element.dataset.img || '';
+  // Assets live in the repository root. Support both the old images/ paths
+  // and root-relative paths so the hero image also works on GitHub Pages.
+  const rootPath = basePath.replace(/^\.?\/?images\//i, '');
   const candidates = Array.from(new Set([
+    rootPath,
     basePath,
-    basePath.replace(/\.jpg$/i, '.jpg'),
-    basePath.replace(/\.png$/i, '.png'),
-    basePath.startsWith('equipment-') && basePath.includes('04') ? 'equipment-04.jpg' : '',
-    basePath.includes('equipment-02') ? 'equipment-02.jpg.jpg' : '',
-    basePath.includes('equipment-04') ? 'equipment-04.jpg' : ''
+    rootPath.replace(/\.jpg$/i, '.jpg'),
+    rootPath.replace(/\.png$/i, '.png'),
+    rootPath.startsWith('equipment-') && rootPath.includes('04') ? 'equipment-04.jpg' : '',
+    rootPath.includes('equipment-02') ? 'equipment-02.jpg.jpg' : '',
+    rootPath.includes('equipment-04') ? 'equipment-04.jpg' : ''
   ])).filter(Boolean);
 
   const tryLoad = (index = 0) => {
@@ -121,6 +125,29 @@ const loadImageWithFallback = (element) => {
   tryLoad();
 };
 
+const addVisualFixes = () => {
+  const style = document.createElement('style');
+  style.textContent = `
+    html { scroll-behavior: smooth; scroll-padding-top: 82px; }
+    body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    .heroContent h1 { font-size: clamp(3.25rem, 8.5vw, 7.75rem); }
+    h2 { font-size: clamp(2.75rem, 5.8vw, 6.5rem); }
+    p { font-size: clamp(1rem, 1.15vw, 1.18rem); }
+    .section small, .heroContent small, .final small { font-size: clamp(.78rem, 1vw, .95rem); }
+    .btn { font-size: clamp(.8rem, 1vw, .95rem); }
+    @media (max-width: 760px) {
+      html { scroll-padding-top: 70px; }
+      .heroContent h1 { font-size: clamp(3rem, 14vw, 4.75rem); }
+      h2 { font-size: clamp(2.4rem, 11vw, 4.25rem); }
+      p { font-size: 1rem; }
+      .section small, .heroContent small, .final small { font-size: .78rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  `;
+  document.head.appendChild(style);
+};
+
+addVisualFixes();
 replaceBrandMarksWithLogo();
 setContactLinks();
 render();
