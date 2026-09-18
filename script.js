@@ -34,6 +34,19 @@ const CONFIG = {
   ]
 };
 
+const replaceBrandMarksWithLogo = () => {
+  document.querySelectorAll('.mark').forEach((mark) => {
+    const img = document.createElement('img');
+    img.src = 'logo.png';
+    img.alt = 'Sarveshwar Fitness logo';
+    img.className = 'mark logo-mark';
+    img.loading = 'eager';
+    img.decoding = 'async';
+    img.style.objectFit = 'contain';
+    mark.replaceWith(img);
+  });
+};
+
 const setContactLinks = () => {
   document.querySelectorAll('[data-call]').forEach((link) => {
     link.href = CONFIG.phone;
@@ -79,6 +92,36 @@ function render(type = 'cardio') {
     .join('');
 }
 
+const loadImageWithFallback = (element) => {
+  const basePath = element.dataset.img || '';
+  const candidates = Array.from(new Set([
+    basePath,
+    basePath.replace(/\.jpg$/i, '.jpg'),
+    basePath.replace(/\.png$/i, '.png'),
+    basePath.startsWith('equipment-') && basePath.includes('04') ? 'equipment-04.jpg' : '',
+    basePath.includes('equipment-02') ? 'equipment-02.jpg.jpg' : '',
+    basePath.includes('equipment-04') ? 'equipment-04.jpg' : ''
+  ])).filter(Boolean);
+
+  const tryLoad = (index = 0) => {
+    if (!candidates[index]) return;
+
+    const image = new Image();
+    image.onload = () => {
+      element.style.backgroundImage = `linear-gradient(#0001, #0001), url("${candidates[index]}")`;
+      const placeholder = element.querySelector('span');
+      if (placeholder) placeholder.style.display = 'none';
+    };
+    image.onerror = () => {
+      if (index < candidates.length - 1) tryLoad(index + 1);
+    };
+    image.src = candidates[index];
+  };
+
+  tryLoad();
+};
+
+replaceBrandMarksWithLogo();
 setContactLinks();
 render();
 
@@ -135,13 +178,7 @@ if ('IntersectionObserver' in window) {
 }
 
 document.querySelectorAll('[data-img]').forEach((element) => {
-  const image = new Image();
-  image.onload = () => {
-    element.style.backgroundImage = `linear-gradient(#0001, #0001), url("${element.dataset.img}")`;
-    const placeholder = element.querySelector('span');
-    if (placeholder) placeholder.style.display = 'none';
-  };
-  image.src = element.dataset.img;
+  loadImageWithFallback(element);
 });
 
 const lightbox = document.querySelector('.lightbox');
