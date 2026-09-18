@@ -1,7 +1,174 @@
-const CONFIG={phone:'tel:+918433650068',whatsapp:'918433650068',directions:'Sarveshwar Fitness, Kurla West, Mumbai',membershipPlans:[{duration:'1 Month',cardioPrice:'PRICE TO BE UPDATED',nonCardioPrice:'PRICE TO BE UPDATED',cardio:['DETAILS TO BE UPDATED'],nonCardio:['DETAILS TO BE UPDATED']},{duration:'3 Months',cardioPrice:'PRICE TO BE UPDATED',nonCardioPrice:'PRICE TO BE UPDATED',cardio:['DETAILS TO BE UPDATED'],nonCardio:['DETAILS TO BE UPDATED']},{duration:'6 Months',cardioPrice:'PRICE TO BE UPDATED',nonCardioPrice:'PRICE TO BE UPDATED',cardio:['DETAILS TO BE UPDATED'],nonCardio:['DETAILS TO BE UPDATED']},{duration:'12 Months',cardioPrice:'PRICE TO BE UPDATED',nonCardioPrice:'PRICE TO BE UPDATED',cardio:['DETAILS TO BE UPDATED'],nonCardio:['DETAILS TO BE UPDATED']} ]};
-document.querySelectorAll('[data-call]').forEach(a=>a.href=CONFIG.phone);document.querySelectorAll('[data-wa]').forEach(a=>{a.href=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent('Hi Sarveshwar Fitness, I would like to enquire about membership.')}`;a.target='_blank';a.rel='noopener'});document.querySelector('#directions').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.directions)}`;
-const plans=document.querySelector('#plans');function render(type='cardio'){plans.innerHTML=CONFIG.membershipPlans.map((p,i)=>{const list=p[type];return `<article class="plan ${i===3?'featured':''}"><div class="duration">${p.duration}</div><div class="price">${type==='cardio'?p.cardioPrice:p.nonCardioPrice}</div><ul>${list.map(x=>`<li>+ ${x}</li>`).join('')}</ul><a class="btn ${i===3?'white':'dark'}" href="#contact">ENQUIRE NOW ↗</a></article>`}).join('')}render();document.querySelectorAll('.toggle button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.toggle button').forEach(x=>x.classList.remove('active'));b.classList.add('active');render(b.dataset.type)});
-const nav=document.querySelector('.nav');addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40),{passive:true});const hb=document.querySelector('.hamb'),mm=document.querySelector('.mobilemenu');hb.onclick=()=>mm.classList.toggle('open');mm.querySelectorAll('a').forEach(a=>a.onclick=()=>mm.classList.remove('open'));
-const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),{threshold:.1});document.querySelectorAll('.reveal').forEach(x=>io.observe(x));
-document.querySelectorAll('[data-img]').forEach(el=>{const img=new Image();img.onload=()=>{el.style.backgroundImage=`linear-gradient(#0001,#0001),url("${el.dataset.img}")`;const s=el.querySelector('span');if(s)s.style.display='none'};img.src=el.dataset.img});
-const lb=document.querySelector('.lightbox'),lbi=lb.querySelector('img');document.querySelectorAll('.gallery .g').forEach(g=>g.onclick=()=>{const i=new Image();i.onload=()=>{lbi.src=g.dataset.img;lb.classList.add('open')};i.src=g.dataset.img});lb.querySelector('button').onclick=()=>{lb.classList.remove('open');lbi.src=''};lb.onclick=e=>e.target===lb&&lb.querySelector('button').click();
+const CONFIG = {
+  phone: 'tel:+918433650068',
+  whatsapp: '918433650068',
+  directions: 'Sarveshwar Fitness, Kurla West, Mumbai',
+  membershipPlans: [
+    {
+      duration: '1 Month',
+      cardioPrice: 'PRICE TO BE UPDATED',
+      nonCardioPrice: 'PRICE TO BE UPDATED',
+      cardio: ['DETAILS TO BE UPDATED'],
+      nonCardio: ['DETAILS TO BE UPDATED']
+    },
+    {
+      duration: '3 Months',
+      cardioPrice: 'PRICE TO BE UPDATED',
+      nonCardioPrice: 'PRICE TO BE UPDATED',
+      cardio: ['DETAILS TO BE UPDATED'],
+      nonCardio: ['DETAILS TO BE UPDATED']
+    },
+    {
+      duration: '6 Months',
+      cardioPrice: 'PRICE TO BE UPDATED',
+      nonCardioPrice: 'PRICE TO BE UPDATED',
+      cardio: ['DETAILS TO BE UPDATED'],
+      nonCardio: ['DETAILS TO BE UPDATED']
+    },
+    {
+      duration: '12 Months',
+      cardioPrice: 'PRICE TO BE UPDATED',
+      nonCardioPrice: 'PRICE TO BE UPDATED',
+      cardio: ['DETAILS TO BE UPDATED'],
+      nonCardio: ['DETAILS TO BE UPDATED']
+    }
+  ]
+};
+
+const setContactLinks = () => {
+  document.querySelectorAll('[data-call]').forEach((link) => {
+    link.href = CONFIG.phone;
+  });
+
+  document.querySelectorAll('[data-wa]').forEach((link) => {
+    link.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(
+      'Hi Sarveshwar Fitness, I would like to enquire about membership.'
+    )}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  });
+
+  const directions = document.querySelector('#directions');
+  if (directions) {
+    directions.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      CONFIG.directions
+    )}`;
+  }
+};
+
+const plans = document.querySelector('#plans');
+
+function render(type = 'cardio') {
+  if (!plans) return;
+
+  const planType = type === 'nonCardio' ? 'nonCardio' : 'cardio';
+  plans.innerHTML = CONFIG.membershipPlans
+    .map((plan, index) => {
+      const list = plan[planType] || [];
+      const price = planType === 'cardio' ? plan.cardioPrice : plan.nonCardioPrice;
+      const featured = index === 3 ? 'featured' : '';
+      const buttonStyle = index === 3 ? 'white' : 'dark';
+
+      return `
+        <article class="plan ${featured}">
+          <div class="duration">${plan.duration}</div>
+          <div class="price">${price}</div>
+          <ul>${list.map((item) => `<li>+ ${item}</li>`).join('')}</ul>
+          <a class="btn ${buttonStyle}" href="#contact">ENQUIRE NOW ↗</a>
+        </article>`;
+    })
+    .join('');
+}
+
+setContactLinks();
+render();
+
+document.querySelectorAll('.toggle button').forEach((button) => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.toggle button').forEach((item) => {
+      item.classList.remove('active');
+    });
+    button.classList.add('active');
+    render(button.dataset.type);
+  });
+});
+
+const nav = document.querySelector('.nav');
+if (nav) {
+  window.addEventListener(
+    'scroll',
+    () => nav.classList.toggle('scrolled', window.scrollY > 40),
+    { passive: true }
+  );
+}
+
+const hamburger = document.querySelector('.hamb');
+const mobileMenu = document.querySelector('.mobilemenu');
+
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  mobileMenu.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  });
+}
+
+const revealElements = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  revealElements.forEach((element) => observer.observe(element));
+} else {
+  revealElements.forEach((element) => element.classList.add('visible'));
+}
+
+document.querySelectorAll('[data-img]').forEach((element) => {
+  const image = new Image();
+  image.onload = () => {
+    element.style.backgroundImage = `linear-gradient(#0001, #0001), url("${element.dataset.img}")`;
+    const placeholder = element.querySelector('span');
+    if (placeholder) placeholder.style.display = 'none';
+  };
+  image.src = element.dataset.img;
+});
+
+const lightbox = document.querySelector('.lightbox');
+const lightboxImage = lightbox?.querySelector('img');
+
+if (lightbox && lightboxImage) {
+  document.querySelectorAll('.gallery .g').forEach((galleryItem) => {
+    galleryItem.addEventListener('click', () => {
+      const image = new Image();
+      image.onload = () => {
+        lightboxImage.src = galleryItem.dataset.img;
+        lightbox.classList.add('open');
+      };
+      image.src = galleryItem.dataset.img;
+    });
+  });
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('open');
+    lightboxImage.removeAttribute('src');
+  };
+
+  lightbox.querySelector('button')?.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeLightbox();
+  });
+}
